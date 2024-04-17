@@ -1,5 +1,6 @@
 package br.com.augusto.desafiovotacao.service.impl;
 
+import br.com.augusto.desafiovotacao.dto.ResultadoVotacaoDTO;
 import br.com.augusto.desafiovotacao.dto.VotoDTO;
 import br.com.augusto.desafiovotacao.model.Associado;
 import br.com.augusto.desafiovotacao.model.SessaoVotacao;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VotoServiceImpl implements VotoService {
@@ -62,5 +65,35 @@ public class VotoServiceImpl implements VotoService {
     @Override
     public Page<Voto> findAllBySessaoVotacaoId(String id, Pageable pageable) {
         return repositoy.findAllBySessaoVotacao_Id( id, pageable );
+    }
+
+    @Override
+    public ResultadoVotacaoDTO getResultadoVotacao(String sessaoId, String pautaId) throws Exception {
+
+        List<Voto> votos = repositoy.findAllBySessaoVotacaoIdAndSessaoVotacaoPautaId( sessaoId, pautaId );
+        if (votos != null && votos.size() > 0) {
+            ResultadoVotacaoDTO resultado = new ResultadoVotacaoDTO();
+            resultado.setSessaoVotacao( votos.get( 0 ).getSessaoVotacao() );
+            resultado.setPauta( votos.get( 0 ).getSessaoVotacao().getPauta() );
+            resultado.setTotalVotos( votos.size() );
+
+            for (Voto item : votos) {
+
+                if (item.isVoto())
+                    resultado.setQuantidadeVotosSim( resultado.getQuantidadeVotosSim() + 1 );
+                else
+                    resultado.setQuantidadeVotosNao( resultado.getQuantidadeVotosNao() + 1 );
+            }
+
+            if (resultado.getQuantidadeVotosNao() > resultado.getQuantidadeVotosSim())
+                resultado.setAprovado( false );
+            else
+                resultado.setAprovado( true );
+
+            return resultado;
+        } else {
+            throw new Exception("Ainda não existem votos para serem contabilizados");
+        }
+
     }
 }
