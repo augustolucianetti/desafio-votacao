@@ -1,11 +1,14 @@
 package br.com.augusto.desafiovotacao.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class SessaoVotacaoDTO {
 
     private LocalDateTime startDate;
 
+    @JsonProperty(required = false)
     private LocalDateTime endDate;
 
     private String idPauta;

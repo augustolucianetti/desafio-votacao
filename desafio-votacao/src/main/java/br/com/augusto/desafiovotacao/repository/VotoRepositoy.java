@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VotoRepositoy extends MongoRepository<Voto, String> {
@@ -14,4 +15,6 @@ public interface VotoRepositoy extends MongoRepository<Voto, String> {
    Page<Voto> findAllBySessaoVotacao_Id(String id, Pageable pageable);
 
    List<Voto> findAllBySessaoVotacaoIdAndSessaoVotacaoPautaId(String sessaoId, String putaId);
+
+   Optional<Voto> findBySessaoVotacaoIdAndAssociadoId(String sessaoVotacaoId, String associadoId);
 }

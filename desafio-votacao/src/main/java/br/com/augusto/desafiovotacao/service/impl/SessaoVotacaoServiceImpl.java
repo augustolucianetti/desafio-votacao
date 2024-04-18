@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -28,7 +29,13 @@ public class SessaoVotacaoServiceImpl implements SessaoVotacaoService {
     public SessaoVotacao save(SessaoVotacaoDTO sessaoVotacaoDTO) throws Exception {
 
         SessaoVotacao sessaoVotacao = new SessaoVotacao();
-        sessaoVotacao.setEndDate( sessaoVotacaoDTO.getEndDate() );
+        LocalDateTime endDate = null;
+        if (sessaoVotacaoDTO.getEndDate() == null) {
+            endDate = sessaoVotacaoDTO.getStartDate().plusMinutes( 1L );
+            sessaoVotacao.setEndDate( endDate );
+        } else
+            sessaoVotacao.setEndDate( sessaoVotacaoDTO.getEndDate() );
+
         sessaoVotacao.setStartDate( sessaoVotacaoDTO.getStartDate() );
         Optional<Pauta> pauta = pautaRepository.findById( sessaoVotacaoDTO.getIdPauta() );
         if (pauta.isPresent())
